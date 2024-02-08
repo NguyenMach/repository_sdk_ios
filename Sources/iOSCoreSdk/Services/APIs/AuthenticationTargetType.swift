@@ -15,7 +15,7 @@ extension AuthenticationTargetType: TargetType {
     var path: String {
         switch self {
         case .refreshAccessToken:
-            return "/mobile/client/refresh-access-token"
+            return "/mobile/driver/refresh-access-token"
         }
     }
 

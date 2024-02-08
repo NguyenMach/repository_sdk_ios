@@ -16,7 +16,7 @@ public class UserSessionModel: BaseModel {
     var tokenType: String?
 
     var expiresIn: Double? {
-        if let _accessToken = accessToken {
+        if let _accessToken = accessToken , !isEmpty(_accessToken){
             let dataDecode = CommonUtils.decode(jwtToken:  _accessToken)
             let iat = (dataDecode["iat"] as? Double) ?? 0
             let exp = dataDecode["exp"] as? Double ?? 0
@@ -26,7 +26,7 @@ public class UserSessionModel: BaseModel {
     }
     
     var tokenDate: Double? {
-        if let _accessToken = accessToken {
+        if let _accessToken = accessToken, !isEmpty(_accessToken) {
             let dataDecode = CommonUtils.decode(jwtToken:  _accessToken)
             return dataDecode["exp"] as? Double
         }
