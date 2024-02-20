@@ -63,7 +63,7 @@ open class BaseAPI: NSObject  {
             #if DEBUG
             print("\n\n==>[API][\(target.method.rawValue)] \(target.baseURL.absoluteString + target.path) REQUEST:\n \(target.task)")
             #endif
-            let provider = MoyaProvider<T>(handleRefreshToken: true)
+            let provider = MoyaProvider<T>(handleRefreshToken: handleRefreshToken)
             provider.request(target, completion: { (result) in
                 #if DEBUG
                    let dateEnd = Date().timeIntervalSince1970
@@ -91,14 +91,17 @@ open class BaseAPI: NSObject  {
                                          userInfo: nil)
                         
                         // Force logout if need
-                        forceLogoutIfNeed(error: error)
+                        if autoLogoutInvalidAuthen {
+                            forceLogoutIfNeed(error: error)
+                        }
  
                         return resolver.reject(error)
                     }
                 case let .failure(error as NSError):
                     // Force logout if need
-                    forceLogoutIfNeed(error: error)
-
+                    if autoLogoutInvalidAuthen {
+                        forceLogoutIfNeed(error: error)
+                    }
                     if let errorType  = APIError.ErrorType(rawValue: error.code) {
                         let err = APIError.defineError(errorType: errorType)
                         
