@@ -49,7 +49,7 @@ extension MoyaProvider {
                     let refreshToken = jsonData["refreshToken"].string
                     let userSession = UserSessionModel(
                         accessToken: accessToken,
-                        refreshToken: refreshToken,
+                        refreshToken: refreshToken ?? CacheService.currentSession?.accessToken,
                         tokenType: "",
                         userId: ""
                     )
@@ -58,7 +58,7 @@ extension MoyaProvider {
                     closure(.success(request))
                     
                     #if DEBUG
-                        print("==>New access token:\(accessToken ?? "") \n =>New refresh token:\(refreshToken ?? "")")
+                        print("==>New token:\(jsonData)")
                     #endif
                     // closure(.success(request)) // This line will "resume" the actual request, and then you can use AccessTokenPlugin to set the Authentication header
                 case .failure(let error):
