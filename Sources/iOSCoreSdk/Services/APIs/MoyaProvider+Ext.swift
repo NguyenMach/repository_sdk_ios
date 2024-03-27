@@ -44,7 +44,7 @@ extension MoyaProvider {
             }
             
             #if DEBUG
-                print("Token expired -> Refresh token....\n =>Current token:\(CacheService.currentSession?.accessToken ?? "")")
+                print("Token expired -> Refresh token....\n =>Current acess token:\(CacheService.currentSession?.accessToken ?? "");\n ==>Refresh token:\(CacheService.currentSession?.refreshToken ?? "")")
             #endif
             
             let authenticationProvider = MoyaProvider<T>()
