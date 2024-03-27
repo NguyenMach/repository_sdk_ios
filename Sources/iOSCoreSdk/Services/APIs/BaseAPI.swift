@@ -55,7 +55,7 @@ open class BaseAPI: NSObject  {
         target: T,
         autoValidateResult: Bool = true,
         autoLogoutInvalidAuthen:Bool = true,
-        handleRefreshToken: Bool = true
+        refreshAccessTokenTarget: TargetType? = nil
     ) -> Promise<Data>  where T : (TargetType)
     {
         let dateStart = Date().timeIntervalSince1970
@@ -63,7 +63,7 @@ open class BaseAPI: NSObject  {
             #if DEBUG
             print("\n\n==>[API][\(target.method.rawValue)] \(target.baseURL.absoluteString + target.path) REQUEST:\n \(target.task)")
             #endif
-            let provider = MoyaProvider<T>(handleRefreshToken: handleRefreshToken)
+            let provider = MoyaProvider<T>(refreshAccessTokenTarget: refreshAccessTokenTarget)
             provider.request(target, completion: { (result) in
                 #if DEBUG
                    let dateEnd = Date().timeIntervalSince1970

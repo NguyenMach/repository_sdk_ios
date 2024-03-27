@@ -8,22 +8,31 @@
 import Moya
 import Foundation
 import SwiftyJSON
+import PromiseKit
 
 extension MoyaProvider {
     
     public convenience init(
-        handleRefreshToken: Bool,
         plugins: [PluginType] = [],
-        manager: Manager = MoyaProvider<Target>.defaultAlamofireManager() ) {
-        
-        if handleRefreshToken {
-            self.init(requestClosure: MoyaProvider.endpointResolver(), manager: manager, plugins: plugins)
+        manager: Manager = MoyaProvider<Target>.defaultAlamofireManager(),
+        refreshAccessTokenTarget: TargetType? = nil
+    ){
+        if let target = refreshAccessTokenTarget {
+            self.init(
+                requestClosure: MoyaProvider.endpointResolver(refreshAccessTokenTarget: target),
+                manager: manager,
+                plugins: plugins
+            )
         } else {
-            self.init()
+            self.init(
+                requestClosure: MoyaProvider.defaultRequestMapping,
+                manager: manager,
+                plugins: plugins
+            )
         }
     }
     
-    static func endpointResolver() -> MoyaProvider<Target>.RequestClosure {
+    static func endpointResolver<T>(refreshAccessTokenTarget: T) -> MoyaProvider<Target>.RequestClosure where T : (TargetType){
         return { (endpoint, closure) in
             //Getting the original request
             let request = try! endpoint.urlRequest()
@@ -38,10 +47,10 @@ extension MoyaProvider {
                 print("Token expired -> Refresh token....\n =>Current token:\(CacheService.currentSession?.accessToken ?? "")")
             #endif
             
-            let authenticationProvider = MoyaProvider<AuthenticationTargetType>()
+            let authenticationProvider = MoyaProvider<T>()
 
             //Do a request to refresh the authtoken based on refreshToken
-            authenticationProvider.request(AuthenticationTargetType.refreshAccessToken) { result in
+            authenticationProvider.request(refreshAccessTokenTarget) { result in
                 switch result {
                 case .success(let response):
                     let jsonData = JSON(response.data)
